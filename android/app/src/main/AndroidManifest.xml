@@ -10,6 +10,7 @@
 
     <application
         android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
         android:label="YT MP3下載器"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
