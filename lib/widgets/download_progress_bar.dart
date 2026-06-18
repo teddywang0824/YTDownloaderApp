@@ -52,7 +52,8 @@ class DownloadProgressBar extends StatelessWidget {
                   ],
                 ),
                 // Percentage
-                if (downloadProgress.state == DownloadState.downloading)
+                if (downloadProgress.state == DownloadState.downloading ||
+                    downloadProgress.state == DownloadState.analyzingAudio)
                   Text(
                     '${(downloadProgress.progress * 100).toInt()}%',
                     style: const TextStyle(
@@ -95,6 +96,15 @@ class DownloadProgressBar extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.accentCyan),
           ),
         );
+      case DownloadState.analyzingAudio:
+        return const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.accentPurple),
+          ),
+        );
       case DownloadState.completed:
         return Container(
           width: 24,
@@ -126,6 +136,8 @@ class DownloadProgressBar extends StatelessWidget {
     switch (downloadProgress.state) {
       case DownloadState.fetchingInfo:
         return '正在取得影片資訊...';
+      case DownloadState.analyzingAudio:
+        return '正在分析音量...';
       case DownloadState.downloading:
         return '正在下載...';
       case DownloadState.completed:

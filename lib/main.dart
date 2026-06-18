@@ -1,14 +1,33 @@
 import 'package:flutter/material.dart';
+import 'services/library_service.dart';
+import 'services/player_service.dart';
 import 'theme/app_theme.dart';
-import 'pages/home_page.dart';
+import 'pages/home_shell.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const YTDownloaderApp());
+  final libraryService = LibraryService();
+  await libraryService.load();
+  final playerService = PlayerService();
+  await playerService.initialize();
+
+  runApp(
+    YTDownloaderApp(
+      libraryService: libraryService,
+      playerService: playerService,
+    ),
+  );
 }
 
 class YTDownloaderApp extends StatelessWidget {
-  const YTDownloaderApp({super.key});
+  final LibraryService libraryService;
+  final PlayerService playerService;
+
+  const YTDownloaderApp({
+    super.key,
+    required this.libraryService,
+    required this.playerService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +35,10 @@ class YTDownloaderApp extends StatelessWidget {
       title: 'YT Music Downloader',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const HomePage(),
+      home: HomeShell(
+        libraryService: libraryService,
+        playerService: playerService,
+      ),
     );
   }
 }

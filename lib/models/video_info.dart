@@ -32,6 +32,7 @@ class VideoInfo {
 enum DownloadState {
   idle,
   fetchingInfo,
+  analyzingAudio,
   readyToDownload,
   downloading,
   completed,
@@ -86,4 +87,49 @@ class DownloadHistoryItem {
     required this.downloadedAt,
     this.thumbnailUrl,
   });
+}
+
+/// Output volume strategy selected by the user.
+enum VolumeAdjustmentMode {
+  original,
+  normalize,
+  manual,
+}
+
+/// Loudness analysis returned from FFmpeg.
+class AudioLoudnessAnalysis {
+  static const double targetLufs = -14.0;
+  static const double safeTruePeakDbtp = -1.5;
+
+  final double integratedLufs;
+  final double truePeakDbtp;
+  final double loudnessRange;
+  final double threshold;
+
+  const AudioLoudnessAnalysis({
+    required this.integratedLufs,
+    required this.truePeakDbtp,
+    required this.loudnessRange,
+    required this.threshold,
+  });
+
+  double get normalizationGainEstimateDb => targetLufs - integratedLufs;
+
+  double get safeManualGainDb {
+    final peakLimitedGain = safeTruePeakDbtp - truePeakDbtp;
+    final suggested = normalizationGainEstimateDb;
+    if (suggested > peakLimitedGain) {
+      return peakLimitedGain.clamp(-12.0, 12.0);
+    }
+    return suggested.clamp(-12.0, 12.0);
+  }
+
+  bool get manualBoostLimitedByPeak =>
+      normalizationGainEstimateDb > (safeTruePeakDbtp - truePeakDbtp);
+
+  String get summary {
+    if (integratedLufs <= -18) return '這首歌偏小聲，建議先做標準化。';
+    if (integratedLufs >= -11) return '這首歌本身偏大聲，保留原始音量或略降會比較安全。';
+    return '這首歌的整體音量已接近常見串流平台水準。';
+  }
 }

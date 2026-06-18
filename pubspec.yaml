@@ -51,6 +51,11 @@ dependencies:
   # Audio format conversion (-> mp3)
   ffmpeg_kit_flutter_new: ^4.1.0
 
+  # In-app audio preview
+  just_audio: ^0.10.5
+  audio_session: ^0.2.3
+  shared_preferences: ^2.5.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

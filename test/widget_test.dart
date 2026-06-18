@@ -1,13 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:yt_downloader/main.dart';
+import 'package:yt_downloader/services/library_service.dart';
+import 'package:yt_downloader/services/player_service.dart';
 
 void main() {
   testWidgets('App renders correctly', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const YTDownloaderApp());
+    final libraryService = LibraryService();
+    final playerService = PlayerService();
 
-    // Verify that the app title is shown
-    expect(find.text('YT Music Downloader'), findsOneWidget);
+    await tester.pumpWidget(
+      YTDownloaderApp(
+        libraryService: libraryService,
+        playerService: playerService,
+      ),
+    );
+
+    expect(find.text('播放器'), findsOneWidget);
   });
 }
